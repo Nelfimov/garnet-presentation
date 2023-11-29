@@ -1,40 +1,293 @@
 <!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <meta name='viewport'
+        content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'>
 
-		<title>reveal.js</title>
+  <title>reveal.js</title>
 
-		<link rel="stylesheet" href="dist/reset.css">
-		<link rel="stylesheet" href="dist/reveal.css">
-		<link rel="stylesheet" href="dist/theme/black.css">
+  <link rel='stylesheet' href='dist/reset.css'>
+  <link rel='stylesheet' href='dist/reveal.css'>
+  <link rel='stylesheet' href='dist/theme/blood.css'>
 
-		<!-- Theme used for syntax highlighted code -->
-		<link rel="stylesheet" href="plugin/highlight/monokai.css">
-	</head>
-	<body>
-		<div class="reveal">
-			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
-			</div>
-		</div>
+  <!-- Theme used for syntax highlighted code -->
+  <link rel='stylesheet' href='plugin/highlight/monokai.css'>
+</head>
+<body>
+<div class='reveal'>
+  <div class='slides'>
+    <section data-background-image='background.png'>
+      <h2>Как разрабатывался фронт-енд</h2>
+    </section>
+    <section>
+      <section>
+        <h3>Наши принципы - DDD</h3>
+        <p>Мы следуем строго по <b>Design Driven Development</b>, поэтому разработка стартовала
+          после
+          завершения дизайна, а так же проработки всех возможных сценариев пользователя по
+          приложению.</p>
+      </section>
+      <section>
+        <h3>Наши принципы - SOLID</h3>
+        <p>Наш проект - монорепозиторий. Каждый компонент, фрагмент, страница, хэлперы - все
+          выделено в отдельный пакет со своими уникальными зависимостями</p>
+      </section>
+      <section>
+        <h3>Пара слов о микро-сервисах</h3>
+        <p>К сожалению, в этом проекте мы не смогли реализовать микро-сервисный подход к клиентской
+          части. Не смотря на это мы все равно разделяем наш код по зонам ответственности. Например,
+          авторизация в клиенте - это отдельное приложение/сервис, работающее отдельно от основного
+          приложения</p>
+      </section>
+    </section>
+    <section>
+      <h3>План работы над клиентской частью</h3>
+      <ol>
+        <li>Собрать тему проекта</li>
+        <li>Собрать UI kit</li>
+        <li>Собрать фрагменты</li>
+        <li>Собрать страницы</li>
+        <li>Интегрировать с бэкендом</li>
+      </ol>
+    </section>
+    <section>
+      <section>
+        <h3>1. Тема проекта</h3>
+        <p>Сбор темы происходит в полуавтоматическом режиме - на основании данных Figma и нашего
+          собственного генератора <b>@atls/figma-theme-cli</b> мы стягиваем все уникальные данные из
+          дизайна, которые затем можем использовать в верстке.</p>
+        <p>В наших проектах мы используем CSS-in-JS:</p>
+        <ul>
+          <li>styled-components</li>
+          <li>emotion</li>
+        </ul>
+        <p>
+          В первую очередь мы ориентируемся на хороший <b>DX</b>, гарантирующий быструю разработку
+        </p>
+      </section>
+      <section>
+        <h3>Пример: цвета</h3>
+        <pre>
+          <code class='hljs javascript' data-trim data-line-numbers='2-12, 13-34'>export const colors = {
+  text: {
+    accent: 'rgba(99, 58, 216, 1)',
+    accentHover: 'rgba(161, 87, 255, 1)',
+    accentPressed: 'rgba(62, 41, 120, 1)',
+    error: 'rgba(216, 57, 57, 1)',
+    gray: 'rgba(162, 159, 171, 1)',
+    lightGrey: 'rgba(208, 204, 218, 1)',
+    primary: 'rgba(0, 0, 0, 1)',
+    white: 'rgba(255, 255, 255, 1)',
+    secondary: 'rgba(53, 53, 53, 1)',
+    darkBlue: 'rgba(46, 121, 234, 1)',
+  },
+  button: {
+    primary: {
+      default: {
+        background: 'rgba(99, 58, 216, 1)',
+        font: 'rgba(255, 255, 255, 1)',
+        border: 'transparent',
+      },
+      hover: {
+        background: 'rgba(161, 87, 255, 1)',
+        font: 'rgba(255, 255, 255, 1)',
+        border: 'transparent',
+      },
+      pressed: {
+        background: 'rgba(62, 41, 120, 1)',
+        font: 'rgba(255, 255, 255, 1)',
+        border: 'transparent',
+      },
+      disabled: {
+        background: 'rgba(162, 159, 171, 1)',
+        font: 'rgba(208, 204, 218, 1)',
+        border: 'transparent',
+      },
+    },
+  ...
+        </code></pre>
+      </section>
+      <section>
+        <h3>Пример: шрифты</h3>
+        <pre>
+          <code class='hljs javascript' data-trim data-line-numbers>export const fonts = {
+  primary: 'Inter',
+}
+        </code></pre>
+        <pre>
+          <code class='hljs javascript' data-trim data-line-numbers>export const fontSizes = {
+  normal: 12,
+  semiMedium: 14,
+  medium: 16,
+  regular: 20,
+  semiLarge: 22,
+  preLarge: 24,
+  extraHuge: 34,
+}
+        </code></pre>
+      </section>
+      <section>
+        <h3>Провайдер темы</h3>
+        <pre>
+          <code class='hljs javascript' data-trim data-line-numbers>import * as React                                from 'react'
 
-		<script src="dist/reveal.js"></script>
-		<script src="plugin/notes/notes.js"></script>
-		<script src="plugin/markdown/markdown.js"></script>
-		<script src="plugin/highlight/highlight.js"></script>
-		<script>
-			// More info about initialization & config:
-			// - https://revealjs.com/initialization/
-			// - https://revealjs.com/config/
-			Reveal.initialize({
-				hash: true,
+import * as theme                                from './theme'
 
-				// Learn about plugins: https://revealjs.com/plugins/
-				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
-			});
-		</script>
-	</body>
+import { ThemeProvider as ProtoThemeProvider }   from '@atls-ui-proto/theme'
+import { ThemeProvider as EmotionThemeProvider } from '@emotion/react'
+
+import { GlobalStyles }                          from './global.styles'
+
+const CustomTheme = ({ children }) => (
+  <Fragment>
+    <GlobalStyles></GlobalStyles>
+    <EmotionThemeProvider theme='{theme}'>{children}</EmotionThemeProvider>
+  </Fragment>
+)
+
+export const ThemeProvider = ({ children }) => (
+  <ProtoThemeProvider>
+    <CustomTheme>{children}</CustomTheme>
+  </ProtoThemeProvider>
+)
+          </code></pre>
+      </section>
+    </section>
+    <section>
+      <section>
+        <h3>2. UI</h3>
+        <p>Здесь мы собираем собственные компоненты, стилизуем их нашей темой. Идея следующая -
+          собрав
+          UI кит мы можем быстро верстать фрагменты.</p>
+      </section>
+      <section>
+        <h3>Вдохновление, но не подражание</h3>
+        <img src='chakra.png' alt='' class='r-stretch' />
+        <img src='mui.png' alt='' class='r-stretch' />
+        <p>Нам нравится стандартизация подхода у библиотек готовых компонентов, таких как <b>MaterialUI</b>.
+          Однако мы не хотим вендор лока, поэтому содержим свою кастомную библиотеку UI компонентов,
+          которую используем во всех наших проектах.</p>
+      </section>
+      <section>
+        <h3>Пример: тег (навыки)</h3>
+        <img src='example-tag.png' alt='' />
+        <pre>
+          <code data-line-numbers>import styled                  from '@emotion/styled'
+
+import React                   from 'react'
+import { FC }                  from 'react'
+
+import { Condition }           from '@ui/condition'
+import { ClearIcon }           from '@ui/icon'
+import { Box }                 from '@ui/layout'
+import { Text }                from '@ui/text'
+
+import { TagElementProps }     from './tag.interfaces'
+import { TagProps }            from './tag.interfaces'
+import { appearanceStyles }    from './tag.styles'
+import { shapeStyles }         from './tag.styles'
+import { hoverStyles }         from './tag.styles'
+import { containerBaseStyles } from './tag.styles'
+
+const TagElement = styled(Box)(
+  containerBaseStyles,
+  appearanceStyles,
+  shapeStyles,
+  hoverStyles
+)
+
+export const Tag: FC = ({
+  children,
+  variant = 'primary',
+  size = 'normal',
+  close,
+  onClick,
+}) => (
+  <TagElement
+    variant='{variant}'
+    size='{size}'
+    style={{ cursor: onClick ? 'pointer' : 'default' }}
+    hover={Boolean(onClick)}
+    onClick={onClick}
+  >
+    <Text
+      fontSize='normal'
+      color='text.darkBlue'
+      overflow='hidden'
+      whiteSpace='nowrap'
+      textOverflow='ellipsis'>
+      {children}
+    </Text>
+    <Condition match='{Boolean(close)}'>
+      <ClearIcon width='{18}' height='{18}' color='darkBlue'></ClearIcon>
+    </Condition>
+  </TagElement>
+)
+        </code></pre>
+      </section>
+    </section>
+    <section>
+      <section>
+        <h3>3. Фрагменты</h3>
+        <p>Далее мы собираем из компонентов часто используемые фрагменты на страницах.</p>
+      </section>
+      <section>
+        <h3>Примеры</h3>
+        <img src='example-navbar.png' alt='' />
+        <img src='example-popup.png' alt='' />
+      </section>
+      <section>
+        <h3>Примеры</h3>
+        <img src='example-profile.png' alt='' />
+      </section>
+      <section>
+        <h3>Примеры</h3>
+        <img src='example-team-profile.png' alt='' />
+      </section>
+    </section>
+    <section>
+      <section>
+        <h3>4. Страницы</h3>
+        <p>Из полученных фрагментов мы делаем страницы.</p>
+      </section>
+      <section>
+        <h3>Примеры</h3>
+        <img src='example-onboarding-page.png' class='r-stretch' alt=''>
+      </section>
+      <section>
+        <h3>Примеры</h3>
+        <img src='example-profile-page.png' class='r-stretch' alt=''>
+      </section>
+    </section>
+    <section>
+      <h3>5. Интеграция с бэкендом</h3>
+      <ul>
+        <li>Авторизация - <b>ORY Kratos</b> и наша кастомная библиотека <b>@atls/next-identity-integration</b></li>
+        <li>Реверс прокси - <b>ORY Oathkeeper</b></li>
+        <li>Общение с бэкендом - <b>Apollo Client</b></li>
+      </ul>
+    </section>
+    <section>
+      <h1>А теперь к live demo</h1>
+    </section>
+  </div>
+</div>
+
+<script src='dist/reveal.js'></script>
+<script src='plugin/notes/notes.js'></script>
+<script src='plugin/markdown/markdown.js'></script>
+<script src='plugin/highlight/highlight.js'></script>
+<script>
+  // More info about initialization & config:
+  // - https://revealjs.com/initialization/
+  // - https://revealjs.com/config/
+  Reveal.initialize({
+    hash: true,
+
+    // Learn about plugins: https://revealjs.com/plugins/
+    plugins: [RevealMarkdown, RevealHighlight, RevealNotes]
+  });
+</script>
+</body>
 </html>
