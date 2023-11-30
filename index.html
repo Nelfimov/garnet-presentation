@@ -17,35 +17,94 @@
 <body>
 <div class='reveal'>
   <div class='slides'>
-    <section data-background-image='background.png'>
-      <h2>Как разрабатывался фронт-енд</h2>
+    <section data-background-image='images/background.png'>
+      <h2 class='r-fit-text'>Фронтенд</h2>
+      <div style='display: flex; flex-direction: row; height: 90px; justify-content: space-evenly'>
+        <img src='images/stack/stack-webpack.png' />
+        <img src='images/stack/stack-typescript.png' />
+        <img src='images/stack/stack-nextjs.svg' />
+        <img src='images/stack/stack-styled-components.png' />
+        <img src='images/stack/stack-react.png' />
+        <img src='images/stack/stack-emotion.png' />
+      </div>
     </section>
     <section>
       <section>
-        <h3>Наши принципы - DDD</h3>
+        <h3>DDD</h3>
         <p>Мы следуем строго по <b>Design Driven Development</b>, поэтому разработка стартовала
           после
           завершения дизайна, а так же проработки всех возможных сценариев пользователя по
           приложению.</p>
       </section>
       <section>
-        <h3>Наши принципы - SOLID</h3>
-        <p>Наш проект - монорепозиторий. Каждый компонент, фрагмент, страница, хэлперы - все
-          выделено в отдельный пакет со своими уникальными зависимостями</p>
+        <h3>Монорепозиторий</h3>
+        <p>Архитектура проекта - монорепозиторий. Каждый компонент, фрагмент, страница, хэлперы -
+          все
+          выделено в отдельный пакет со своими уникальными зависимостями. Это позволяет нам
+          изолировать пакеты друг от друга, избегать проблем с зависимостями и их версиями, а так же
+          быстрее искать проблемы и фиксить их.</p>
       </section>
       <section>
-        <h3>Пара слов о микро-сервисах</h3>
-        <p>К сожалению, в этом проекте мы не смогли реализовать микро-сервисный подход к клиентской
-          части. Не смотря на это мы все равно разделяем наш код по зонам ответственности. Например,
-          авторизация в клиенте - это отдельное приложение/сервис, работающее отдельно от основного
-          приложения</p>
+        <h3>SOLID</h3>
+        <p>Мы яростно чтим SOLID. Мы разделяем друг от друга хуки, сайдэффекты, рендер. Каждый
+          компонент, функция, объект имеют свою зону ответственности. Преимуществом такого подхода
+          является расширяемость, масштабируемость и переиспользование.</p>
+      </section>
+      <section>
+        <h3>FSD</h3>
+        <p>Проект построен Feature Sliced Design.</p>
+        <div style='display: flex; flex-direction: row'>
+          <pre><code class='hljs markdown' data-trim>
+  ├── common/
+  │   └── client/
+  │       ├── entrypoints
+  │       ├── fragments
+  │       └── pages
+  ├── features/
+  │   └── identity/
+  │       ├── entrypoints
+  │       ├── fragments
+  │       └── pages
+  ├── shared
+  ├── stores
+  └── ui
+          </code></pre>
+          <pre><code class='hljs markdown' data-trim>
+├── shared/
+│   ├── data
+│   ├── fragments
+│   ├── kratos-client
+│   ├── routes
+│   └── utils
+├── stores/
+│   └── session
+└── ui/
+    ├── avatar
+    ├── background
+    ├── button
+    ├── card
+    ├── condition
+    └── ...
+          </code></pre>
+        </div>
+      </section>
+      <section>
+        <h3>Микрофронтенд</h3>
+        <p>К сожалению, в этом проекте мы не смогли реализовать микрофронтенды. Мы столкнулись с
+          проблемой шэринга контекста темы <b>emotion</b> из-за чего дочерние энтрипоинты не
+          рендерили компоненты.
+        </p>
+        <p>
+          Несмотря на это, мы
+          все равно разделяем наш код по зонам ответственности. Например,
+          авторизация в клиенте - это отдельное приложение/сервис.</p>
       </section>
     </section>
     <section>
       <h3>План работы над клиентской частью</h3>
       <ol>
         <li>Собрать тему проекта</li>
-        <li>Собрать UI kit</li>
+        <li>Собрать UIKit</li>
         <li>Собрать фрагменты</li>
         <li>Собрать страницы</li>
         <li>Интегрировать с бэкендом</li>
@@ -54,10 +113,9 @@
     <section>
       <section>
         <h3>1. Тема проекта</h3>
-        <p>Сбор темы происходит в полуавтоматическом режиме - на основании данных Figma и нашего
-          собственного генератора <b>@atls/figma-theme-cli</b> мы стягиваем все уникальные данные из
-          дизайна, которые затем можем использовать в верстке.</p>
-        <p>В наших проектах мы используем CSS-in-JS:</p>
+        <p>Формирование темы происходит в полуавтоматическом режиме - на базе данных из Figma мы
+          генерируем тему посредством генератора <b>@atls/figma-theme-cli</b>.</p>
+        <p>В проекте мы используем CSS-in-JS:</p>
         <ul>
           <li>styled-components</li>
           <li>emotion</li>
@@ -157,21 +215,25 @@ export const ThemeProvider = ({ children }) => (
     <section>
       <section>
         <h3>2. UI</h3>
-        <p>Здесь мы собираем собственные компоненты, стилизуем их нашей темой. Идея следующая -
+        <p>Мы формируем компоненты, стилизуем их темой проекта, сформированной ранее. Идея следующая
+          -
           собрав
-          UI кит мы можем быстро верстать фрагменты.</p>
+          UIKit мы можем быстро собирать фрагменты.</p>
       </section>
       <section>
         <h3>Вдохновление, но не подражание</h3>
-        <img src='chakra.png' alt='' class='r-stretch' />
-        <img src='mui.png' alt='' class='r-stretch' />
+        <div style='display: flex; flex-direction: row; height: 150px; justify-content: space-evenly'>
+          <img src='images/chakra.png' alt='' class='r-stretch' />
+          <img src='images/mui.png' alt='' class='r-stretch' />
+          <img src='images/radix.png' alt='' class='r-stretch' />
+        </div>
         <p>Нам нравится стандартизация подхода у библиотек готовых компонентов, таких как <b>MaterialUI</b>.
           Однако мы не хотим вендор лока, поэтому содержим свою кастомную библиотеку UI компонентов,
           которую используем во всех наших проектах.</p>
       </section>
       <section>
         <h3>Пример: тег (навыки)</h3>
-        <img src='example-tag.png' alt='' />
+        <img src='images/example-tag.png' alt='' />
         <pre>
           <code data-line-numbers>import styled                  from '@emotion/styled'
 
@@ -222,51 +284,181 @@ export const Tag: FC = ({
     <Condition match='{Boolean(close)}'>
       <ClearIcon width='{18}' height='{18}' color='darkBlue'></ClearIcon>
     </Condition>
-  </TagElement>
-)
+            </TagElement>
+            )
         </code></pre>
       </section>
     </section>
     <section>
       <section>
         <h3>3. Фрагменты</h3>
-        <p>Далее мы собираем из компонентов часто используемые фрагменты на страницах.</p>
+        <p>Далее мы собираем из компонентов часто используемые фрагменты на страницах. Фрагменты -
+          совокупность компонентов, объединенных для рендера отдельных кусков приложения, а так же добавляющих логику.</p>
       </section>
       <section>
         <h3>Примеры</h3>
-        <img src='example-navbar.png' alt='' />
-        <img src='example-popup.png' alt='' />
+        <img src='images/example-navbar.png' alt='' />
+        <img src='images/example-popup.png' alt='' />
       </section>
       <section>
         <h3>Примеры</h3>
-        <img src='example-profile.png' alt='' />
+        <img src='images/example-profile.png' alt='' />
       </section>
       <section>
         <h3>Примеры</h3>
-        <img src='example-team-profile.png' alt='' />
+        <img src='images/example-team-profile.png' alt='' />
       </section>
     </section>
     <section>
       <section>
         <h3>4. Страницы</h3>
-        <p>Из полученных фрагментов мы делаем страницы.</p>
+        <p>Из полученных фрагментов мы собираем страницы. Страница - это набор фрагментов согласно
+          дизайна. Она передается в энтрипоинт для рендера.</p>
       </section>
       <section>
-        <h3>Примеры</h3>
-        <img src='example-onboarding-page.png' class='r-stretch' alt=''>
+        <h3>Пример: онбординг</h3>
+        <img src='images/example-onboarding-page.png' class='r-stretch' alt=''>
       </section>
       <section>
-        <h3>Примеры</h3>
-        <img src='example-profile-page.png' class='r-stretch' alt=''>
+        <h3>Пример: страница профиля</h3>
+        <img src='images/example-profile-page.png' class='r-stretch' alt=''>
       </section>
     </section>
     <section>
-      <h3>5. Интеграция с бэкендом</h3>
-      <ul>
-        <li>Авторизация - <b>ORY Kratos</b> и наша кастомная библиотека <b>@atls/next-identity-integration</b></li>
-        <li>Реверс прокси - <b>ORY Oathkeeper</b></li>
-        <li>Общение с бэкендом - <b>Apollo Client</b></li>
-      </ul>
+      <section>
+        <h3>5. Интеграция с бэкендом</h3>
+        <p>Для организации бэкенда мы используем в том числе и сторонние решения:</p>
+        <ul>
+          <li>Авторизация - <b>ORY Kratos</b> и <b>@atls/next-identity-integration</b>
+          </li>
+          <li>Реверс прокси - <b>ORY Oathkeeper</b></li>
+        </ul>
+      </section>
+      <section>
+        <h3>Клиент</h3>
+        <p>Для запросов к бэкенду мы используем <b>Apollo Client</b>. Клиент так же формируется в
+          отдельном пакете:</p>
+        <pre class='r-stretch'><code class='hljs javascript'
+                                     data-trim
+                                     data-line-numbers='6-18'
+                                     style='font-size: 20px'>
+import { ApolloClient }     from '@apollo/client'
+import { InMemoryCache }    from '@apollo/client'
+
+import { createUploadLink } from 'apollo-upload-client'
+
+export const getClient = () =>
+  new ApolloClient({
+    cache: new InMemoryCache(),
+    link: createUploadLink({
+      uri:
+        process.env.NEXT_PUBLIC_BACKEND_URL ??
+        'https://stage.garnet.pet-project.habr.com/api/sandbox',
+      headers: {
+        'GraphQL-preflight': '1',
+      },
+      credentials: 'same-origin',
+    }),
+  })
+
+        </code></pre>
+      </section>
+      <section>
+        <h3>Формирование запросов</h3>
+        <p>Каждый запрос представляет собой отдельный хук, отвечающий только за выполнение этого
+          запроса и предоставляющий доступ к данным, ошибкам и состоянию запроса.</p>
+        <p>Благодаря следованию принципам SOLID мы можем легко проводить дебаг или работать над расширением
+          функционала.</p>
+      </section>
+      <section>
+        <h3>Пример фрагмента</h3>
+        <pre><code data-trim data-line-numbers='1,3,7,13-16' style='font-size:16px'>
+export const EnterDescription: FC = ({ onSubmit }) => {
+  const [errorText, setErrorText] = useState('')
+  const { value, setValue, disabled } = useDescriptionState(setErrorText)
+
+  const { formatMessage } = useIntl()
+
+  const { submit, loading } = useSubmitDescription()
+
+  const updateErrorText = () => {
+    validateValue(value, (id, values) => setErrorText(id ? formatMessage({ id }, values) : id))
+  }
+
+  const handleSubmit = async () => {
+    await submit(value)
+    onSubmit?.()
+  }
+  ...
+      </code></pre>
+      </section>
+      <section>
+        <h3>Пример хука</h3>
+        <pre><code data-trim data-line-numbers='4-16' style='font-size: 16px'>
+  import { useUpdateUserDescription } from '../data'
+
+  export const useSubmitDescription = () => {
+    const { updateUserDescription, loading } = useUpdateUserDescription()
+
+    const submit = async (value: string) => {
+      try {
+        if (value) {
+          await updateUserDescription({ variables: { description: value } })
+        }
+      } catch (error) {
+        if (process.env.NODE_ENV !== 'production') throw error
+      }
+    }
+
+    return { submit, loading }
+  }
+
+          </code></pre>
+      </section>
+      <section>
+        <h3>Пример мутации</h3>
+        <pre><code data-trim data-line-numbers='15-22' style='font-size: 20px'>
+import { useMutation }             from '@apollo/client'
+
+import { User }                    from '@shared/data'
+
+import { UPDATE_USER_DESCRIPTION } from './update-user-description.mutation'
+
+export interface UpdateUserDescriptionResponse {
+  userEditDescription: User
+}
+
+export interface UpdateUserDescriptionInput {
+  description: User['description']
+}
+
+export const useUpdateUserDescription = () => {
+  const [updateUserDescription, { data, loading }] = useMutation<
+    UpdateUserDescriptionResponse,
+    UpdateUserDescriptionInput
+  >(UPDATE_USER_DESCRIPTION)
+
+  return { updateUserDescription, data, loading }
+}
+
+        </code></pre>
+      </section>
+      <section>
+        <h3>Пример запроса</h3>
+        <pre><code data-trim data-line-numbers='4-9' style='font-size: 20px'>
+import { gql } from '@apollo/client'
+
+export const UPDATE_USER_DESCRIPTION = gql`
+  mutation UserEditDescription($description: String!) {
+    userEditDescription(input: { description: $description }) {
+      id
+      description
+    }
+  }
+`
+
+        </code></pre>
+      </section>
     </section>
     <section>
       <h1>А теперь к live demo</h1>
